@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>RAMARSON Andriamanolohaja — Expert MEAL · BI Developer</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --navy:    #0B1F33;
+    --navy2:   #122840;
+    --navy3:   #1A3550;
+    --teal:    #157A8A;
+    --teal2:   #1DA8BC;
+    --teal3:   #4CC8D8;
+    --teal-bg: #E6F4F6;
+    --gold:    #C9942A;
+    --gold2:   #E8B84B;
+    --gold-bg: #FDF6E3;
+    --dark:    #1A2733;
+    --mid:     #52687A;
+    --light:   #F0F5FA;
+    --rule:    #D0DCE8;
+    --white:   #FFFFFF;
+    --success: #2E9E6B;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--navy);
+    color: var(--white);
+    overflow-x: hidden;
+  }
+
+  /* ── CUSTOM CURSOR ─────────────────────────────── */
+  body { cursor: none; }
+  .cursor {
+    width: 10px; height: 10px;
+    background: var(--gold2);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none; z-index: 9999;
+    transition: transform .15s ease;
+    mix-blend-mode: normal;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1.5px solid var(--teal3);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none; z-index: 9998;
+    transition: transform .35s cubic-bezier(.25,.46,.45,.94);
+    opacity: .7;
+  }
+
+  /* ── NAV ───────────────────────────────────────── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 18px 48px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(11,31,51,.85);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(255,255,255,.06);
+    transition: all .4s;
+  }
+  nav.scrolled {
+    padding: 12px 48px;
+    background: rgba(11,31,51,.97);
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem; font-weight: 700;
+    color: var(--white); letter-spacing: .02em;
+  }
+  .nav-logo span { color: var(--gold2); }
+  .nav-links { display: flex; gap: 36px; list-style: none; }
+  .nav-links a {
+    color: rgba(255,255,255,.7);
+    text-decoration: none; font-size: .85rem;
+    font-weight: 500; letter-spacing: .08em;
+    text-transform: uppercase;
+    transition: color .25s;
+    position: relative;
+  }
+  .nav-links a::after {
+    content: '';
+    position: absolute; bottom: -4px; left: 0; right: 0;
+    height: 1.5px; background: var(--gold2);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform .3s ease;
+  }
+  .nav-links a:hover { color: var(--white); }
+  .nav-links a:hover::after { transform: scaleX(1); }
+
+  /* ── HERO ──────────────────────────────────────── */
+  #hero {
+    min-height: 100vh;
+    display: flex; align-items: center;
+    position: relative; overflow: hidden;
+    padding: 120px 48px 80px;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 70% 40%, rgba(21,122,138,.18) 0%, transparent 65%),
+      radial-gradient(ellipse 50% 50% at 15% 80%, rgba(201,148,42,.08) 0%, transparent 60%),
+      linear-gradient(160deg, #0B1F33 0%, #0F2840 50%, #081828 100%);
+  }
+  .hero-grid {
+    position: absolute; inset: 0; opacity: .04;
+    background-image:
+      linear-gradient(var(--teal2) 1px, transparent 1px),
+      linear-gradient(90deg, var(--teal2) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+  /* Floating orbs */
+  .orb {
+    position: absolute; border-radius: 50%;
+    filter: blur(60px); pointer-events: none;
+    animation: float 8s ease-in-out infinite;
+  }
+  .orb-1 { width: 400px; height: 400px; background: rgba(29,168,188,.12); top: -80px; right: -80px; animation-delay: 0s; }
+  .orb-2 { width: 250px; height: 250px; background: rgba(201,148,42,.10); bottom: 60px; left: 10%; animation-delay: 3s; }
+  .orb-3 { width: 180px; height: 180px; background: rgba(21,122,138,.15); top: 40%; right: 20%; animation-delay: 5s; }
+  @keyframes float {
+    0%,100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-30px) scale(1.05); }
+  }
+
+  .hero-content { position: relative; z-index: 2; max-width: 750px; }
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(29,168,188,.15);
+    border: 1px solid rgba(29,168,188,.3);
+    color: var(--teal3); font-size: .78rem;
+    padding: 6px 14px; border-radius: 20px;
+    letter-spacing: .1em; text-transform: uppercase;
+    font-weight: 500; margin-bottom: 28px;
+    animation: fadeUp .8s ease both;
+  }
+  .hero-tag::before { content: '●'; font-size: .5rem; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+  .hero-name {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 6vw, 5.5rem);
+    font-weight: 900; line-height: 1.05;
+    letter-spacing: -.02em;
+    animation: fadeUp .8s .15s ease both;
+  }
+  .hero-name .line2 { color: var(--teal3); display: block; }
+  .hero-subtitle {
+    font-size: 1.05rem; color: rgba(255,255,255,.65);
+    margin: 20px 0 32px; line-height: 1.7;
+    font-weight: 300; max-width: 580px;
+    animation: fadeUp .8s .3s ease both;
+  }
+  .hero-subtitle strong { color: var(--gold2); font-weight: 500; }
+  .hero-ctas {
+    display: flex; gap: 16px; flex-wrap: wrap;
+    animation: fadeUp .8s .45s ease both;
+  }
+  .btn-primary {
+    background: var(--gold);
+    color: var(--navy); font-weight: 700;
+    padding: 14px 28px; border-radius: 6px;
+    text-decoration: none; font-size: .9rem;
+    letter-spacing: .04em; text-transform: uppercase;
+    transition: all .3s; border: none;
+    box-shadow: 0 4px 20px rgba(201,148,42,.3);
+  }
+  .btn-primary:hover { background: var(--gold2); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(201,148,42,.4); }
+  .btn-outline {
+    background: transparent;
+    color: var(--white); font-weight: 500;
+    padding: 13px 28px; border-radius: 6px;
+    text-decoration: none; font-size: .9rem;
+    letter-spacing: .04em; text-transform: uppercase;
+    transition: all .3s;
+    border: 1.5px solid rgba(255,255,255,.3);
+  }
+  .btn-outline:hover { border-color: var(--teal3); color: var(--teal3); transform: translateY(-2px); }
+
+  /* KPIs */
+  .hero-kpis {
+    display: flex; gap: 40px; margin-top: 56px;
+    animation: fadeUp .8s .6s ease both;
+  }
+  .kpi { border-left: 2px solid var(--gold); padding-left: 16px; }
+  .kpi-val { font-family: 'Playfair Display', serif; font-size: 2.4rem; font-weight: 900; color: var(--white); line-height: 1; }
+  .kpi-label { font-size: .75rem; color: rgba(255,255,255,.5); text-transform: uppercase; letter-spacing: .1em; margin-top: 4px; }
+
+  /* Scroll indicator */
+  .scroll-ind {
+    position: absolute; bottom: 32px; left: 50%;
+    transform: translateX(-50%); z-index: 2;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    color: rgba(255,255,255,.3); font-size: .72rem; letter-spacing: .12em; text-transform: uppercase;
+    animation: fadeUp 1s 1s ease both;
+  }
+  .scroll-line {
+    width: 1px; height: 50px;
+    background: linear-gradient(to bottom, var(--teal2), transparent);
+    animation: scrollLine 2s ease-in-out infinite;
+  }
+  @keyframes scrollLine { 0%,100%{opacity:.4;transform:scaleY(1)} 50%{opacity:1;transform:scaleY(1.2)} }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── SECTION BASE ──────────────────────────────── */
+  section { padding: 100px 48px; position: relative; }
+  .section-tag {
+    font-size: .72rem; letter-spacing: .2em; text-transform: uppercase;
+    color: var(--gold2); font-weight: 600; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-tag::before { content: ''; width: 30px; height: 1.5px; background: var(--gold2); display: block; }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 3.5vw, 3rem);
+    font-weight: 700; line-height: 1.2;
+    margin-bottom: 16px;
+  }
+  .section-subtitle { color: rgba(255,255,255,.5); font-size: 1rem; line-height: 1.7; max-width: 540px; font-weight: 300; }
+
+  /* ── ABOUT ─────────────────────────────────────── */
+  #about { background: var(--navy2); }
+  .about-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 80px; align-items: center; margin-top: 60px;
+  }
+  .about-text p {
+    color: rgba(255,255,255,.7); line-height: 1.85; font-size: .97rem;
+    font-weight: 300; margin-bottom: 18px;
+  }
+  .about-text strong { color: var(--teal3); font-weight: 600; }
+  .about-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 28px; }
+  .tag {
+    background: rgba(21,122,138,.15);
+    border: 1px solid rgba(29,168,188,.25);
+    color: var(--teal3); font-size: .78rem;
+    padding: 6px 14px; border-radius: 4px;
+    font-weight: 500; letter-spacing: .05em;
+    transition: all .25s;
+  }
+  .tag:hover { background: rgba(29,168,188,.25); border-color: var(--teal3); }
+
+  .about-highlights { display: flex; flex-direction: column; gap: 20px; }
+  .highlight-card {
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.08);
+    border-left: 3px solid var(--gold);
+    padding: 24px 28px; border-radius: 6px;
+    transition: all .3s;
+  }
+  .highlight-card:hover { background: rgba(255,255,255,.07); transform: translateX(6px); }
+  .highlight-card h4 { font-size: .9rem; font-weight: 600; margin-bottom: 6px; color: var(--white); }
+  .highlight-card p { font-size: .85rem; color: rgba(255,255,255,.55); line-height: 1.6; }
+
+  /* ── EXPERIENCE ────────────────────────────────── */
+  #experience { background: var(--navy); }
+  .exp-timeline { margin-top: 60px; position: relative; }
+  .exp-timeline::before {
+    content: '';
+    position: absolute; left: 16px; top: 0; bottom: 0;
+    width: 1px; background: linear-gradient(to bottom, var(--teal), transparent);
+  }
+  .exp-item {
+    padding-left: 54px; position: relative; margin-bottom: 52px;
+    opacity: 0; transform: translateX(-20px);
+    transition: all .6s ease;
+  }
+  .exp-item.visible { opacity: 1; transform: translateX(0); }
+  .exp-dot {
+    position: absolute; left: 8px; top: 6px;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: var(--navy); border: 2px solid var(--teal2);
+    transition: all .3s;
+  }
+  .exp-item:hover .exp-dot { background: var(--teal2); box-shadow: 0 0 12px var(--teal2); }
+  .exp-period {
+    font-family: 'DM Mono', monospace;
+    font-size: .75rem; color: var(--teal3); letter-spacing: .1em;
+    margin-bottom: 8px;
+  }
+  .exp-period .current {
+    background: rgba(46,158,107,.15); color: var(--success);
+    border: 1px solid rgba(46,158,107,.3);
+    padding: 2px 8px; border-radius: 10px; font-size: .7rem;
+    margin-left: 10px; letter-spacing: .08em;
+  }
+  .exp-role {
+    font-size: 1.1rem; font-weight: 700; color: var(--white);
+    margin-bottom: 4px; line-height: 1.3;
+  }
+  .exp-org {
+    font-size: .88rem; color: var(--teal3); font-weight: 600; margin-bottom: 4px;
+  }
+  .exp-loc { font-size: .8rem; color: rgba(255,255,255,.4); margin-bottom: 16px; font-style: italic; }
+  .exp-desc {
+    background: rgba(255,255,255,.03);
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 6px; padding: 20px 24px;
+  }
+  .exp-desc ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .exp-desc li {
+    font-size: .87rem; color: rgba(255,255,255,.65); line-height: 1.6;
+    padding-left: 18px; position: relative;
+  }
+  .exp-desc li::before { content: '▸'; position: absolute; left: 0; color: var(--gold2); font-size: .7rem; top: 3px; }
+  .exp-desc li strong { color: rgba(255,255,255,.9); font-weight: 600; }
+
+  /* ── SKILLS ────────────────────────────────────── */
+  #skills { background: var(--navy2); }
+  .skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; margin-top: 60px; }
+  .skill-group { margin-bottom: 36px; }
+  .skill-group-title {
+    font-size: .78rem; text-transform: uppercase; letter-spacing: .15em;
+    color: var(--gold2); font-weight: 600; margin-bottom: 18px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .skill-group-title::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,.08); }
+  .skill-bar-wrap { margin-bottom: 14px; }
+  .skill-bar-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .skill-name { font-size: .87rem; color: rgba(255,255,255,.8); font-weight: 500; }
+  .skill-pct { font-family: 'DM Mono', monospace; font-size: .75rem; color: var(--teal3); }
+  .skill-track {
+    height: 5px; background: rgba(255,255,255,.08);
+    border-radius: 3px; overflow: hidden;
+  }
+  .skill-fill {
+    height: 100%; border-radius: 3px;
+    background: linear-gradient(90deg, var(--teal), var(--teal3));
+    width: 0; transition: width 1.2s cubic-bezier(.25,.46,.45,.94);
+  }
+  .skill-fill.gold { background: linear-gradient(90deg, var(--gold), var(--gold2)); }
+  .skill-fill.green { background: linear-gradient(90deg, #1E7A52, var(--success)); }
+
+  .tools-cloud { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 40px; }
+  .tool-badge {
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.1);
+    color: rgba(255,255,255,.75); font-size: .8rem;
+    padding: 7px 14px; border-radius: 4px; font-weight: 500;
+    transition: all .25s; cursor: default;
+  }
+  .tool-badge:hover {
+    background: rgba(29,168,188,.15);
+    border-color: var(--teal2); color: var(--teal3);
+    transform: translateY(-2px);
+  }
+
+  /* ── PORTFOLIO ─────────────────────────────────── */
+  #portfolio { background: var(--navy); }
+  .portfolio-card {
+    background: var(--navy2);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 12px; overflow: hidden;
+    transition: all .4s;
+  }
+  .portfolio-card:hover { transform: translateY(-6px); border-color: rgba(29,168,188,.3); box-shadow: 0 20px 60px rgba(0,0,0,.4); }
+  .portfolio-visual {
+    height: 220px; position: relative; overflow: hidden;
+    background: linear-gradient(135deg, var(--navy3) 0%, #0D2A40 100%);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .portfolio-visual-inner {
+    position: relative; z-index: 2; text-align: center;
+  }
+  .portfolio-visual-icon {
+    font-size: 3rem; margin-bottom: 12px; display: block;
+  }
+  .portfolio-visual-label {
+    font-family: 'DM Mono', monospace;
+    font-size: .72rem; color: var(--teal3); letter-spacing: .15em; text-transform: uppercase;
+  }
+  .portfolio-visual .bg-chart {
+    position: absolute; inset: 0; opacity: .15;
+    display: flex; align-items: flex-end; gap: 8px;
+    padding: 20px 20px 0;
+  }
+  .bg-bar {
+    flex: 1; background: var(--teal2); border-radius: 3px 3px 0 0;
+    animation: barGrow 1.5s ease both;
+  }
+  @keyframes barGrow { from{transform:scaleY(0);transform-origin:bottom} to{transform:scaleY(1)} }
+  .portfolio-body { padding: 28px; }
+  .portfolio-body h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; }
+  .portfolio-body p { font-size: .86rem; color: rgba(255,255,255,.55); line-height: 1.65; margin-bottom: 20px; }
+  .portfolio-techs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+  .portfolio-tech {
+    background: rgba(21,122,138,.15); border: 1px solid rgba(29,168,188,.2);
+    color: var(--teal3); font-size: .73rem; padding: 4px 10px; border-radius: 3px;
+  }
+  .portfolio-link {
+    color: var(--gold2); font-size: .83rem; font-weight: 600;
+    text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+    transition: gap .2s;
+  }
+  .portfolio-link:hover { gap: 10px; }
+
+  .portfolio-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 60px; }
+
+  /* ── CONTACT ───────────────────────────────────── */
+  #contact {
+    background: var(--navy2);
+    text-align: center;
+  }
+  .contact-inner { max-width: 640px; margin: 0 auto; }
+  .contact-inner .section-subtitle { margin: 0 auto 48px; text-align: center; }
+  .contact-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 48px; }
+  .contact-card {
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 8px; padding: 24px 20px;
+    text-decoration: none; color: var(--white);
+    transition: all .3s; display: flex; flex-direction: column; align-items: center; gap: 8px;
+  }
+  .contact-card:hover { background: rgba(29,168,188,.1); border-color: var(--teal2); transform: translateY(-4px); }
+  .contact-card-icon { font-size: 1.8rem; }
+  .contact-card-label { font-size: .72rem; text-transform: uppercase; letter-spacing: .12em; color: rgba(255,255,255,.4); }
+  .contact-card-value { font-size: .9rem; font-weight: 500; color: var(--teal3); }
+
+  /* ── FOOTER ────────────────────────────────────── */
+  footer {
+    background: var(--navy);
+    border-top: 1px solid rgba(255,255,255,.06);
+    padding: 28px 48px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  footer p { font-size: .8rem; color: rgba(255,255,255,.3); }
+  .footer-logo { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; }
+  .footer-logo span { color: var(--gold2); }
+
+  /* ── REVEAL ANIMATIONS ─────────────────────────── */
+  .reveal {
+    opacity: 0; transform: translateY(32px);
+    transition: opacity .7s ease, transform .7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: none; }
+  .reveal-delay-1 { transition-delay: .1s; }
+  .reveal-delay-2 { transition-delay: .2s; }
+  .reveal-delay-3 { transition-delay: .3s; }
+
+  /* ── RESPONSIVE ────────────────────────────────── */
+  @media (max-width: 900px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    section { padding: 70px 24px; }
+    #hero { padding: 100px 24px 70px; }
+    .about-grid, .skills-grid { grid-template-columns: 1fr; gap: 40px; }
+    .portfolio-grid { grid-template-columns: 1fr; }
+    .hero-kpis { gap: 24px; }
+    .contact-grid { grid-template-columns: 1fr; }
+    footer { flex-direction: column; gap: 10px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-logo">R<span>.</span>Andriamanolohaja</div>
+  <ul class="nav-links">
+    <li><a href="#about">À propos</a></li>
+    <li><a href="#experience">Expériences</a></li>
+    <li><a href="#skills">Compétences</a></li>
+    <li><a href="#portfolio">Portfolio</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <div class="hero-content">
+    <div class="hero-tag">Disponible · Expert MEAL & BI Developer</div>
+    <h1 class="hero-name">
+      RAMARSON
+      <span class="line2">Andriamanolohaja</span>
+    </h1>
+    <p class="hero-subtitle">
+      Expert en <strong>Suivi-Évaluation</strong> et <strong>Business Intelligence</strong> avec
+      plus de 11 ans d'expérience. Spécialisé dans la conception de pipelines de données,
+      l'analyse <strong>SQL / Python / R</strong> et le développement de tableaux de bord interactifs.
+    </p>
+    <div class="hero-ctas">
+      <a href="#portfolio" class="btn-primary">Voir mes réalisations →</a>
+      <a href="#contact" class="btn-outline">Me contacter</a>
+    </div>
+    <div class="hero-kpis">
+      <div class="kpi">
+        <div class="kpi-val">11+</div>
+        <div class="kpi-label">Années d'expérience</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-val">500+</div>
+        <div class="kpi-label">Villages ODF certifiés</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-val">12+</div>
+        <div class="kpi-label">Tableaux de bord déployés</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-val">50+</div>
+        <div class="kpi-label">Personnes formées</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll-ind">
+    <div class="scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-tag">À propos</div>
+  <h2 class="section-title reveal">Données. Insights. Impact.</h2>
+  <div class="about-grid">
+    <div class="about-text reveal">
+      <p>
+        Basé à <strong>Fianarantsoa, Madagascar</strong>, je suis expert en Suivi-Évaluation
+        et Business Intelligence avec une solide expérience dans des projets financés par
+        <strong>USAID, Global Sanitation Fund</strong> et des ONG médicales internationales.
+      </p>
+      <p>
+        Mon approche combine rigueur méthodologique et maîtrise technique :
+        de la <strong>collecte terrain</strong> (CommCare, DHIS2, KoboToolbox) jusqu'à la
+        <strong>visualisation décisionnelle</strong> (Looker Studio, Power BI), en passant par
+        l'analyse de données (<strong>SQL, Python, R</strong>) et l'entreposage cloud (<strong>BigQuery</strong>).
+      </p>
+      <p>
+        Je crois en la puissance des données pour transformer les décisions — des villages
+        ruraux de Madagascar aux salles de réunion des partenaires internationaux.
+      </p>
+      <div class="about-tags">
+        <span class="tag">MEAL / SERA</span>
+        <span class="tag">Business Intelligence</span>
+        <span class="tag">Data Analytics</span>
+        <span class="tag">SQL & BigQuery</span>
+        <span class="tag">WASH</span>
+        <span class="tag">Santé Communautaire</span>
+        <span class="tag">QGIS / SIG</span>
+        <span class="tag">Formation & Coaching</span>
+      </div>
+    </div>
+    <div class="about-highlights reveal reveal-delay-2">
+      <div class="highlight-card">
+        <h4>📊 Data-to-Decision Pipeline</h4>
+        <p>Conception de flux complets : collecte terrain → nettoyage → entreposage BigQuery → tableaux de bord Looker Studio / Power BI.</p>
+      </div>
+      <div class="highlight-card">
+        <h4>🗺️ Impact Terrain Prouvé</h4>
+        <p>Plus de 500 villages certifiés ODF (fin de la défécation à l'air libre) dans la région Vatovavy Fitovinany, Madagascar.</p>
+      </div>
+      <div class="highlight-card">
+        <h4>🎓 Maîtrise & Master MISS</h4>
+        <p>Double formation universitaire en Mathématiques et Informatiques pour les Sciences Sociales — Université de Fianarantsoa.</p>
+      </div>
+      <div class="highlight-card">
+        <h4>🌍 Contextes Internationaux</h4>
+        <p>Expérience avec USAID, Global Sanitation Fund, ONG médicales internationales, Grand Lyon et INSTAT Madagascar.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="section-tag">Parcours</div>
+  <h2 class="section-title reveal">11 ans d'expériences<br>sur le terrain et au bureau</h2>
+  <p class="section-subtitle reveal reveal-delay-1">De la supervision de recensements nationaux au déploiement de pipelines BI cloud — un parcours ancré dans la data.</p>
+
+  <div class="exp-timeline">
+
+    <div class="exp-item">
+      <div class="exp-dot"></div>
+      <div class="exp-period">Janvier 2026 — Présent <span class="current">● En cours</span></div>
+      <div class="exp-role">Freelance BI Developer (Volontaire)</div>
+      <div class="exp-org">Projets de données sur Madagascar — Indépendant</div>
+      <div class="exp-loc">📍 Fianarantsoa, Madagascar</div>
+      <div class="exp-desc">
+        <ul>
+          <li><strong>Collecte :</strong> extraction et agrégation de données publiques sur Madagascar (socio-économiques, sanitaires, géographiques).</li>
+          <li><strong>Pipeline :</strong> traitement, nettoyage, standardisation → entreposage Google Sheets & BigQuery.</li>
+          <li><strong>SQL :</strong> manipulation et analyse sous SQL (requêtes, jointures, vues, agrégations).</li>
+          <li><strong>Visualisation :</strong> tableaux de bord interactifs Looker Studio — voir <a href="https://lookerstudio.google.com/reporting/6a00d329-9498-49fd-9aa7-10b099033720" target="_blank" style="color:var(--teal3)">portfolio en ligne</a>.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exp-item">
+      <div class="exp-dot"></div>
+      <div class="exp-period">Mars 2020 — Décembre 2025</div>
+      <div class="exp-role">Responsable MEAL — Suivi-Évaluation, Gestion des Connaissances & Renforcement Institutionnel</div>
+      <div class="exp-org">ONG Médicale PIVOT</div>
+      <div class="exp-loc">📍 Ranomafana, Madagascar</div>
+      <div class="exp-desc">
+        <ul>
+          <li><strong>Pipeline de données :</strong> CommCare → BigQuery → Looker Studio pour le suivi en temps réel.</li>
+          <li><strong>10+ tableaux de bord</strong> Looker Studio (BigQuery/Google Sheets) + 2 sous Power BI + supervision 10+ DHIS2.</li>
+          <li>Conception et conduite d'évaluations de projets, revues de performance, cadres logiques.</li>
+          <li><strong>20+ personnes formées</strong> : data literacy, Power BI, Power Query, Excel avancé, bases de données.</li>
+          <li>Politique d'archivage institutionnel, rapports analytiques, vidéos de réalisations mensuelles.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exp-item">
+      <div class="exp-dot"></div>
+      <div class="exp-period">Mai 2017 — Décembre 2019</div>
+      <div class="exp-role">Responsable Suivi-Évaluation / Responsable Technique et Innovation</div>
+      <div class="exp-org">Programme FAA (Global Sanitation Fund) — MCDI / AINGA Madagascar</div>
+      <div class="exp-loc">📍 Région Vatovavy Fitovinany, Madagascar</div>
+      <div class="exp-desc">
+        <ul>
+          <li>🏆 <strong>+500 villages certifiés ODF</strong> via l'approche CLTS (Community-Led Total Sanitation).</li>
+          <li>Supervision terrain, validation ODF, contrôle qualité des données.</li>
+          <li><strong>10+ Techniciens Accompagnateurs</strong> et <strong>20+ gouvernances locales</strong> formés.</li>
+          <li>Ateliers de capitalisation, rapports périodiques pour le Global Sanitation Fund.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exp-item">
+      <div class="exp-dot"></div>
+      <div class="exp-period">Mars 2018 — Juin 2018</div>
+      <div class="exp-role">Superviseur de Recensement — RGPH-3</div>
+      <div class="exp-org">INSTAT Madagascar</div>
+      <div class="exp-loc">📍 District d'Ambohimahasoa, Madagascar</div>
+      <div class="exp-desc">
+        <ul>
+          <li>Supervision opérationnelle du 3e Recensement Général de la Population et de l'Habitat.</li>
+          <li>Formation des contrôleurs RGPH, contrôle qualité (fiabilité, exhaustivité, cohérence).</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exp-item">
+      <div class="exp-dot"></div>
+      <div class="exp-period">Septembre 2014 — Octobre 2016</div>
+      <div class="exp-role">Responsable SE & Superviseur TA — Programmes USAID Mikolo & FAA</div>
+      <div class="exp-org">Management Sciences for Health (MSH) / MCDI / AINGA Madagascar</div>
+      <div class="exp-loc">📍 Région Haute Matsiatra, Madagascar</div>
+      <div class="exp-desc">
+        <ul>
+          <li>Conception et opérationnalisation des dispositifs SE pour deux programmes simultanés.</li>
+          <li>Collecte, vérification, analyse et consolidation des données terrain.</li>
+          <li>Supervision des Techniciens Accompagnateurs en santé communautaire.</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="section-tag">Compétences</div>
+  <h2 class="section-title reveal">Stack technique &<br>savoir-faire métier</h2>
+
+  <div class="skills-grid">
+    <!-- Col 1 -->
+    <div>
+      <div class="skill-group reveal">
+        <div class="skill-group-title">Analyse de données</div>
+        <div class="skill-bar-wrap"><div class="skill-bar-top"><span class="skill-name">SQL</span><span class="skill-pct">87%</span></div><div class="skill-track"><div class="skill-fill" data-w="87"></div></div></div>
+        <div class="skill-bar-wrap"><div class="skill-bar-top"><span class="skill-name">Excel / Power Query</span><span class="skill-pct">93%</span></div><div class="skill-track"><div class="skill-fill" data-w="93"></div></div></div>
+        <div class="skill-bar-wrap"><div class="skill-bar-top"><span class="skill-name">R</span><span class="skill-pct">76%</span></div><div class="skill-track"><div class="skill-fill" data-w="76"></div></div></div>
+        <div class="skill-bar-wrap"><div class="skill-bar-top"><span class="skill-name">Python</span><span class="skill-pct">72%</span></div><div class="skill-track"><div class="skill-fill" data-w="72"></div></div></div>
+        <div class="skill-bar-wrap"><div class="skill-bar-top"><span class="skill-name">SPSS</span><span class="skill-pct">82%</span></div><div class="skill-track"><div class="skill-fill" data-w="82"></div></div></div>
+      </div>
+      <div class="skill-group reveal reveal-delay-1">
+        <div class="skill-group-title">Visualisation & BI</div>
+        <div class="skill-bar-wrap"><div class="skill-bar-top"><span class="skill-name">Looker Studio</span><span class="skill-pct">93%</span></div><div class="skill-track"><div class="skill-fill" data-w="93"></div></div></div>
+        <div class="skill-bar-wrap"><div class="skill-bar-top"><span class="skill-name">Power BI</span><span class="skill-pct">88%</span></div><div class="skill-track"><div class="skill-fill" data-w="88"></div></div></div>
+        <div class="skill-bar-wrap"><div class="skill-bar-top"><span class="skill-name">DHIS2 — Dashboards</span><span class="skill-pct">90%</span></div><div class="skill-track"><div class="skill-fill" data-w="90"></div></div></div>
+      </div>
+    </div>
+
+    <!-- Col 2 -->
+    <div>
+      <div class="skill-group reveal reveal-delay-1">
+        <div class="skill-group-title">Collecte & Entreposage</div>
+        <div class="skill-bar-wrap"><div class="skill-bar-top"><span class="skill-name">CommCare</span><span class="skill-pct">92%</span></div><div class="skill-track"><div class="skill-fill" data-w="92"></div></div></div>
+        <div class="skill-bar-wrap"><div class="skill-bar-top"><span class="skill-name">DHIS2 (collecte)</span><span class="skill-pct">90%</span></div><div class="skill-track"><div class="skill-fill" data-w="90"></div></div></div>
+        <div class="skill-bar-wrap"><div class="skill-bar-top"><span class="skill-name">BigQuery</span><span class="skill-pct">84%</span></div><div class="skill-track"><div class="skill-fill" data-w="84"></div></div></div>
+        <div class="skill-bar-wrap"><div class="skill-bar-top"><span class="skill-name">KoboToolbox / ODK</span><span class="skill-pct">88%</span></div><div class="skill-track"><div class="skill-fill" data-w="88"></div></div></div>
+      </div>
+      <div class="skill-group reveal reveal-delay-2">
+        <div class="skill-group-title">SIG & Cartographie</div>
+        <div class="skill-bar-wrap"><div class="skill-bar-top"><span class="skill-name">QGIS</span><span class="skill-pct">78%</span></div><div class="skill-track"><div class="skill-fill green" data-w="78"></div></div></div>
+        <div class="skill-bar-wrap"><div class="skill-bar-top"><span class="skill-name">QField (terrain)</span><span class="skill-pct">75%</span></div><div class="skill-track"><div class="skill-fill green" data-w="75"></div></div></div>
+      </div>
+      <div class="skill-group reveal reveal-delay-2">
+        <div class="skill-group-title">Compétences transversales</div>
+        <div class="skill-bar-wrap"><div class="skill-bar-top"><span class="skill-name">Formation & Coaching</span><span class="skill-pct">95%</span></div><div class="skill-track"><div class="skill-fill gold" data-w="95"></div></div></div>
+        <div class="skill-bar-wrap"><div class="skill-bar-top"><span class="skill-name">Évaluations & MEAL</span><span class="skill-pct">92%</span></div><div class="skill-track"><div class="skill-fill gold" data-w="92"></div></div></div>
+        <div class="skill-bar-wrap"><div class="skill-bar-top"><span class="skill-name">Rapportage analytique</span><span class="skill-pct">91%</span></div><div class="skill-track"><div class="skill-fill gold" data-w="91"></div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tools-cloud reveal">
+    <div class="tool-badge">CommCare</div>
+    <div class="tool-badge">DHIS2</div>
+    <div class="tool-badge">KoboToolbox</div>
+    <div class="tool-badge">Sphinx</div>
+    <div class="tool-badge">ODK</div>
+    <div class="tool-badge">SQL</div>
+    <div class="tool-badge">BigQuery</div>
+    <div class="tool-badge">Python</div>
+    <div class="tool-badge">R</div>
+    <div class="tool-badge">SPSS</div>
+    <div class="tool-badge">Excel</div>
+    <div class="tool-badge">Power Query</div>
+    <div class="tool-badge">Power BI</div>
+    <div class="tool-badge">Looker Studio</div>
+    <div class="tool-badge">QGIS</div>
+    <div class="tool-badge">QField</div>
+    <div class="tool-badge">Google Sheets</div>
+    <div class="tool-badge">Cadres Logiques</div>
+    <div class="tool-badge">DQA</div>
+    <div class="tool-badge">Théorie du Changement</div>
+  </div>
+</section>
+
+<!-- PORTFOLIO -->
+<section id="portfolio">
+  <div class="section-tag">Réalisations</div>
+  <h2 class="section-title reveal">Projets & Tableaux de bord</h2>
+  <p class="section-subtitle reveal reveal-delay-1">Données collectées, transformées, analysées et visualisées pour un impact mesurable.</p>
+
+  <div class="portfolio-grid">
+
+    <div class="portfolio-card reveal">
+      <div class="portfolio-visual">
+        <div class="bg-chart">
+          <div class="bg-bar" style="height:60%;animation-delay:.1s"></div>
+          <div class="bg-bar" style="height:80%;animation-delay:.2s"></div>
+          <div class="bg-bar" style="height:50%;animation-delay:.3s"></div>
+          <div class="bg-bar" style="height:90%;animation-delay:.4s"></div>
+          <div class="bg-bar" style="height:70%;animation-delay:.5s"></div>
+          <div class="bg-bar" style="height:85%;animation-delay:.6s"></div>
+          <div class="bg-bar" style="height:65%;animation-delay:.7s"></div>
+        </div>
+        <div class="portfolio-visual-inner">
+          <span class="portfolio-visual-icon">📊</span>
+          <div class="portfolio-visual-label">Looker Studio Dashboard</div>
+        </div>
+      </div>
+      <div class="portfolio-body">
+        <h3>Tableau de Bord — Données Madagascar</h3>
+        <p>Pipeline complet de données publiques sur Madagascar : collecte web, nettoyage, entreposage BigQuery, analyse SQL et visualisation interactive Looker Studio.</p>
+        <div class="portfolio-techs">
+          <span class="portfolio-tech">SQL</span>
+          <span class="portfolio-tech">BigQuery</span>
+          <span class="portfolio-tech">Looker Studio</span>
+          <span class="portfolio-tech">Google Sheets</span>
+        </div>
+        <a href="https://lookerstudio.google.com/reporting/6a00d329-9498-49fd-9aa7-10b099033720" target="_blank" class="portfolio-link">Voir le dashboard →</a>
+      </div>
+    </div>
+
+    <div class="portfolio-card reveal reveal-delay-1">
+      <div class="portfolio-visual" style="background:linear-gradient(135deg,#0F2A1E,#0D2A40)">
+        <div class="portfolio-visual-inner">
+          <span class="portfolio-visual-icon">🏥</span>
+          <div class="portfolio-visual-label">ONG PIVOT · 2020–2025</div>
+        </div>
+      </div>
+      <div class="portfolio-body">
+        <h3>Système MEAL — ONG Médicale PIVOT</h3>
+        <p>Conception et déploiement d'un écosystème complet de suivi programmatique : 10+ dashboards Looker Studio, 2 Power BI, 10+ DHIS2 supervisés.</p>
+        <div class="portfolio-techs">
+          <span class="portfolio-tech">CommCare</span>
+          <span class="portfolio-tech">BigQuery</span>
+          <span class="portfolio-tech">Looker Studio</span>
+          <span class="portfolio-tech">Power BI</span>
+          <span class="portfolio-tech">DHIS2</span>
+        </div>
+        <span class="portfolio-link" style="color:var(--mid);cursor:default">Projet institutionnel</span>
+      </div>
+    </div>
+
+    <div class="portfolio-card reveal reveal-delay-2">
+      <div class="portfolio-visual" style="background:linear-gradient(135deg,#1A2A15,#0D2A40)">
+        <div class="portfolio-visual-inner">
+          <span class="portfolio-visual-icon">🗺️</span>
+          <div class="portfolio-visual-label">Global Sanitation Fund · CLTS</div>
+        </div>
+      </div>
+      <div class="portfolio-body">
+        <h3>Programme ODF — 500+ Villages Certifiés</h3>
+        <p>Pilotage du programme CLTS et système SE complet pour la certification ODF de plus de 500 villages dans la région Vatovavy Fitovinany.</p>
+        <div class="portfolio-techs">
+          <span class="portfolio-tech">Suivi-Évaluation</span>
+          <span class="portfolio-tech">CLTS</span>
+          <span class="portfolio-tech">Tableaux de bord</span>
+          <span class="portfolio-tech">DQA</span>
+        </div>
+        <span class="portfolio-link" style="color:var(--mid);cursor:default">Projet terrain</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-inner">
+    <div class="section-tag" style="justify-content:center">Contact</div>
+    <h2 class="section-title reveal">Travaillons ensemble</h2>
+    <p class="section-subtitle reveal reveal-delay-1">
+      Disponible pour des missions de conseil, consultances MEAL, développement BI
+      ou formations — en présentiel à Madagascar ou à distance.
+    </p>
+    <div class="contact-grid reveal reveal-delay-2">
+      <a href="mailto:andriamanolohaja@gmail.com" class="contact-card">
+        <div class="contact-card-icon">✉️</div>
+        <div class="contact-card-label">Email</div>
+        <div class="contact-card-value">andriamanolohaja@gmail.com</div>
+      </a>
+      <a href="tel:+261347660677" class="contact-card">
+        <div class="contact-card-icon">📞</div>
+        <div class="contact-card-label">Téléphone</div>
+        <div class="contact-card-value">+261 34 766 06 77</div>
+      </a>
+      <a href="https://www.linkedin.com/in/andriamanolohaja" target="_blank" class="contact-card">
+        <div class="contact-card-icon">💼</div>
+        <div class="contact-card-label">LinkedIn</div>
+        <div class="contact-card-value">Andriamanolohaja</div>
+      </a>
+      <div class="contact-card" style="cursor:default">
+        <div class="contact-card-icon">📍</div>
+        <div class="contact-card-label">Localisation</div>
+        <div class="contact-card-value">Bateravola, Fianarantsoa — Madagascar</div>
+      </div>
+    </div>
+    <a href="https://lookerstudio.google.com/reporting/6a00d329-9498-49fd-9aa7-10b099033720" target="_blank" class="btn-primary" style="display:inline-block">
+      🔗 Voir mon Portfolio Looker Studio →
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">R<span>.</span>Andriamanolohaja</div>
+  <p>Expert MEAL · BI Developer · Fianarantsoa, Madagascar</p>
+  <p>© 2026 RAMARSON Andriamanolohaja</p>
+</footer>
+
+<script>
+// ── Custom cursor ────────────────────────────────
+const cur = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+let mx = 0, my = 0, rx = 0, ry = 0;
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cur.style.transform = `translate(${mx-5}px, ${my-5}px)`;
+});
+(function animRing() {
+  rx += (mx - rx) * .12;
+  ry += (my - ry) * .12;
+  ring.style.transform = `translate(${rx-18}px, ${ry-18}px)`;
+  requestAnimationFrame(animRing);
+})();
+document.querySelectorAll('a, button, .tool-badge, .highlight-card, .portfolio-card').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    cur.style.transform += ' scale(2)';
+    ring.style.transform += ' scale(1.5)';
+    ring.style.borderColor = 'var(--gold2)';
+  });
+  el.addEventListener('mouseleave', () => {
+    ring.style.borderColor = 'var(--teal3)';
+  });
+});
+
+// ── Navbar scroll ────────────────────────────────
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 60);
+});
+
+// ── Reveal on scroll ─────────────────────────────
+const reveals = document.querySelectorAll('.reveal, .exp-item');
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      // Animate skill bars when they come into view
+      e.target.querySelectorAll('.skill-fill').forEach(bar => {
+        bar.style.width = bar.dataset.w + '%';
+      });
+    }
+  });
+}, { threshold: 0.12 });
+reveals.forEach(el => io.observe(el));
+
+// Also trigger skill bars that are already visible
+document.querySelectorAll('.skill-fill').forEach(bar => {
+  const rect2 = bar.getBoundingClientRect();
+  if (rect2.top < window.innerHeight) bar.style.width = bar.dataset.w + '%';
+});
+
+// ── Smooth active nav links ───────────────────────
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-links a');
+window.addEventListener('scroll', () => {
+  let cur2 = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 120) cur2 = s.id;
+  });
+  navLinks.forEach(a => {
+    a.style.color = a.getAttribute('href') === '#'+cur2
+      ? 'var(--teal3)' : '';
+  });
+});
+</script>
+</body>
+</html>
